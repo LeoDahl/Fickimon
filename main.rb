@@ -1,17 +1,17 @@
 
-def get_Dialogue(num)
-  dialoguesArrays = []
-  dialogue = File.open("dialouge.txt")
-  dialogueRows = dialogue.readlines()
-  x = 0
-  while x != dialogueRows.length do
-    if dialogueRows[x][0] == "'"
-      dialoguesArrays << dialogueRows[x]
-    end
-    x = x + 1
-  end
-  return dialoguesArrays[num]
-end
+# def get_Dialogue(num)
+#   dialoguesArrays = []
+#   dialogue = File.open("dialouge.txt")
+#   dialogueRows = dialogue.readlines()
+#   x = 0
+#   while x != dialogueRows.length do
+#     if dialogueRows[x][0] == "'"
+#       dialoguesArrays << dialogueRows[x]
+#     end
+#     x = x + 1
+#   end
+#   return dialoguesArrays[num]
+# end
 
 
 
@@ -26,9 +26,10 @@ def game_start()
 
   puts "Type Start to begin!"
   loop do
-      input = gets
-      puts input
-      puts get_Dialogue(input.to_i)
+    input = gets
+    while 
+    puts input
+    puts get_Dialogue(input.to_i)
   end
 end
 

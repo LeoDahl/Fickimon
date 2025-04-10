@@ -1,0 +1,7 @@
+ ["Grass", "Grass attack" "attack", 20] ## Attacks for 20 dmg
+
+  ["Flying", "Fly away" "immunity", 2] ## Two rounds immune
+  
+  ["Fire", "Burn", "attack", "lasting" 2, 5] ## Burns for two rounds for 5 dmg
+  ["Ground", "Ground attack", "attack", 20]
+  ["Water", "Waterfall", "type_immunity", "fire", 2] ## Becomes immune against fire for 2 rounds
