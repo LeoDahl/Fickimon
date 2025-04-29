@@ -1,11 +1,15 @@
-Pokemons = File.readlines("Inventory_pokemon.txt")
+require_relative 'pokemons.rb'
 
-def startFight(pokemon)
+Pokemons = File.readlines("Inventory_pokemon.txt")
+Ascii = File.readlines("ascii.txt")
+
+def initFight(pokemon)
   puts pokemon + " wishes to fight!"
   puts "Please select pokemon to fight with!"
   showpokemons()
   puts "write the number of the pokemon or name. example: '1' or 'bulbasaur'"
-  choosePokemon()
+  youPokemon = choosePokemon()
+  fight(pokemon, yourPokemon)
 end
 
 def showpokemons()
@@ -18,8 +22,8 @@ def showpokemons()
   end
 end
 
-def choosePokemon()
-  pokemonOfChoice = gets.chomp
+def choosePokemon(pokemonOfChoice)
+
   if pokemonOfChoice == pokemonOfChoice.to_i.to_s
     pokemonOfChoice = pokemonOfChoice.to_i
     if Pokemons[pokemonOfChoice-1] != nil
@@ -32,7 +36,7 @@ def choosePokemon()
   end
 end
 
-def nameMatch(nameGiven)
+def nameMatch(nameGiven) ## Hjälp funktion för choosePokemon()
   nameGiven = nameGiven.upcase
   i = 0
   while i < Pokemons.length
@@ -50,4 +54,39 @@ def nameMatch(nameGiven)
   puts "could not find the a pokemon with the name of: '#{nameGiven}'"
 end
 
-startFight("Pikachu")
+
+def showGUI(pokemon)
+  ## Step 1, find pikachu (or corresponding pokemon)
+  i = 0
+  start = 0 
+  endpos = 0
+  while i < Ascii.length
+    i = i + 1
+    if Ascii[i] && Ascii[i].chomp == pokemon 
+      start = i+1
+      endpos = start+1
+      while Ascii[endpos].chomp != "end"
+        endpos = endpos + 1
+      end   
+    break
+    end
+    
+  end
+  z = start
+    while z != endpos
+      puts Ascii[z]
+      z = z + 1
+    end
+  return start, endpos
+end
+
+def fight(enemy, allyPokemon)
+  allyPokemon = Pokemon.new(Pokemons[allyPokemon])
+  puts allyPokemon
+  enemyLvl = allyPokemon.lvl + rand(-2..2)
+  enemyMaxhp = rand(50..300)
+  enemy = Pokemon.new(enemy, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
+end
+
+
+

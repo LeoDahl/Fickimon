@@ -2,10 +2,12 @@ require 'uri'
 require 'json'
 require 'net/http'
 
+enemies = []
+
 class Pokemon
   attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, 
   :effects, :effectduration, :dmgmult
-  def initialize(name, pokemon_id,maxhp,hp, lvl, xp)
+  def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
     @id = pokemon_id
     @effects = effects
     @name = name
@@ -21,6 +23,14 @@ class Pokemon
     @hp = @hp + health
     if @hp > @maxhp
       @hp = @maxhp
+    end
+  end
+  def updateXp(xpEarned)
+    @maxhp *= ((@xp + xpEarned) / @xp).to_i
+    @xp += xpEarned
+    while @xp >= 100
+      @xp -= 100
+      @lvl += 1
     end
   end
 end
@@ -53,7 +63,6 @@ class Abilities
       # Do take hp thing
     end
   end
-
 end
 
 ## Create current ability
@@ -65,10 +74,7 @@ GroundAttack = Abilities.new("Ground", "Ground attack", "Sleep", 0, 2)
 
 
 def init()
-  readline = File.readlines("Inventory_pokemon")
-  arr = readline[0].split(",")
-  puts arr
+  readline = File.readlines("Inventory_pokemon.txt")
+  arr = readline[0].chomp.split(",")
+  p arr
 end
-
-
-init()

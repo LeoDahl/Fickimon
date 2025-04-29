@@ -1,50 +1,60 @@
-#open this file with function to start dialogue
+# open this file with function to start dialogue
 
-def whatFood()
+# def whatFood()
+#     puts "This is a test dialouge"
+#     puts "Down below is three options"
+#     puts "pancakes, ice cream or pizza"
 
+#     options = ["pancakes", "ice scream", "pizza"]
 
-    puts "This is a test dialouge"
-    puts "Down below is three options"
-    puts "pancakes, ice cream or pizza"
+#     chosenOption = gets.chomp
 
-    options = ["pancakes", "ice scream", "pizza"]
+#     count = 0
+#     for i in 0..options.length
+#         if chosenOption == options[i]
+#             count += 1
+#         end
+#     end
 
-    chosenOption = gets.chomp
+#     if count == 1
+#         puts "your choice: #{chosenOption}"
+#         return chosenOption
+#     else
+#         return "invalid choice"
+#     end
+# end
 
-    count = 0
-    for i in 0..options.length
-        if chosenOption == options[i]
-            count += 1
-        end
-    end
+# def pancakes()
 
-    if count == 0
-        puts "your choice: #{chosenOption}"
-        return chosenOption
-    else
-        return "invalid choice"
-    end
+#     puts "pancakes are so yummr"
+#     puts "eat the pancake?"
+
+#     options = ["eat pancake", "dont eat pancake"]
+
+#     chosenOption = gets.chomp
+
+#     count = 0
+#     for i in 0..options.length
+#         if chosenOption == options[i]
+#             count += 1
+#         end
+#     end
+
+#     if count == 1
+#         return chosenOption
+#     else
+#         return "invalid option"
+#     end
+# end
+
+def start()
+    puts "Today is my as a pokemon trainer!"
+    puts "enter your name"
+
+    name = gets.chomp
+    return name
 end
 
-def pancakes()
-
-    puts "pancakes are so yummr"
-    puts "eat the pancake?"
-
-    options = ["eat pancake", "dont eat pancake"]
-
-    chosenOption = gets.chomp
-
-    count = 0
-    for i in 0..options.length
-        if chosenOption == options[i]
-            count += 1
-        end
-    end
-
-    if count != 0
-        return "invalid option"
-    else
-        return chosenOption
-    end
-end
+def leavingHouse()
+    puts "you get ready and leave the house"
+    puts ""
