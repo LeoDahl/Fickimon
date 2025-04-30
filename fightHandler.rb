@@ -3,13 +3,21 @@ require_relative 'pokemons.rb'
 Pokemons = File.readlines("Inventory_pokemon.txt")
 Ascii = File.readlines("ascii.txt")
 
-def initFight(pokemon)
+def initFight(enemyPokemon)
   puts pokemon + " wishes to fight!"
   puts "Please select pokemon to fight with!"
   showpokemons()
   puts "write the number of the pokemon or name. example: '1' or 'bulbasaur'"
-  youPokemon = choosePokemon()
-  fight(pokemon, yourPokemon)
+  youPokemonIndex = choosePokemon()
+  yourPokemon = Pokemon.new(Pokemons[yourPokemonIndex])
+  puts yourPokemon
+  enemyLvl = yourPokemon.lvl + rand(-2..2)
+  if enemyLvl < 1
+    enemyLvl = 1
+  end
+  enemyMaxhp = rand(50..300)
+  enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
+  fight(enemyPokeon, yourPokemon)
 end
 
 def showpokemons()
@@ -80,13 +88,24 @@ def showGUI(pokemon)
   return start, endpos
 end
 
-def fight(enemy, allyPokemon)
-  allyPokemon = Pokemon.new(Pokemons[allyPokemon])
-  puts allyPokemon
-  enemyLvl = allyPokemon.lvl + rand(-2..2)
-  enemyMaxhp = rand(50..300)
-  enemy = Pokemon.new(enemy, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
+def fight(enemy, ally)
+  inFight = true
+  allyMoves = availableMoves(ally)
+  enemyMoves = availableMoves(enemy)
+  while inFight
+    puts "Choose your move"
+    puts allyMoves
+  end
 end
 
+def availableMoves(pokemon)
+  lvl = pokemon.lvl
 
-
+  if lvl < 2
+    
+  elsif lvl == 2
+  elsif lvl == 3
+  else
+  end
+  return moves
+end

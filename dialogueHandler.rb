@@ -7,9 +7,20 @@ def intro(dialoguePart)
 
     dialogue = false
 
+    choiceArr = []
+
     for i in 0..text.length
+
         if dialogue == true
-            print text[i]
+            #print text[i]
+            #choiceArr = []
+            p choiceArr
+        else
+            if text[i] != "#" && text[i] != "\n"
+                choiceArr.push(text[i])
+            end
+
+            
         end
 
 

@@ -2,12 +2,13 @@ require 'uri'
 require 'json'
 require 'net/http'
 
-enemies = []
+enemies = [squirtle, pikachu, bulbasaur]
 
 class Pokemon
   attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, 
   :effects, :effectduration, :dmgmult
-  def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
+  def initialize(name, pokemon_id, maxhp, hp, lvl, xp, pokemon_abilities)
+    @abilities = pokemon_abilities
     @id = pokemon_id
     @effects = effects
     @name = name
@@ -66,11 +67,12 @@ class Abilities
 end
 
 ## Create current ability
+BasicAttack = Abilities.new(nil, "Basic", "Basic Attack", "Attack", 10, nil)
 GrassAttack = Abilities.new("Grass", "Grass Attack", "Attack", 20, nil)
-FlyAway = Abilities.new("Flying", "Fly away", "immune", nil, 2)
+FlyAway = Abilities.new("Flying", "Fly away", "immune", nil, 1)
 Burn = Abilities.new("Fire", "Burn", "lasting_attack", 5, 3)
 Waterfall = Abilities.new("Water", "Water attack", "Attack", 15, nil)
-GroundAttack = Abilities.new("Ground", "Ground attack", "Sleep", 0, 2)
+GroundAttack = Abilities.new("Ground", "Ground attack", "Sleep", 0, 1)
 
 
 def init()
