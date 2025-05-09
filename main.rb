@@ -18,41 +18,42 @@ require_relative "pokemons.rb"
 # end
 
 
-enemies = ["pikachu", "bulbasaur"]
 
 def game_start()
+  enemies = ["squirtle", "pikachu", "bulbasaur"]
   main = true
   while main
-    
     diaNum = 0
+
     ## Open necessary files
-    
     options = File.open("options.txt")
+
     #Get rows
     optionRows = options.readlines()
 
     puts "Type Start to begin!"
     notValid = true
 
-    loop do
-      input = gets.chomp
-      validInputs = ["Start", "start"]
-      i = 0 
-      while notValid
-        notValid = true
-        while i < validInputs.length
-          i += 1
-          if i == validInputs
-            notValid = false
-            break
-          end
+    input = gets.chomp
+    validInputs = ["Start", "start"]
+    i = 0 
+    while notValid
+      notValid = true
+      while i < validInputs.length
+        if input == validInputs[i]
+          notValid = false
         end
+        i += 1
       end
-      puts input
-      puts get_Dialogue(input.to_i)
     end
-    
-    game_start()
+    if notValid
+      puts "Invalid input, please try again"
+      puts "Type Start to begin!"
+      input = gets.chomp
+    end
+    # puts get_Dialogue(input.to_i) <---- Fungerar inte
+
+    puts "Welcome to the world of Pokemon!"
     enemyIndex = rand(0..enemies.length-1)
     initFight(enemies[enemyIndex])
   end

@@ -4,12 +4,15 @@ Pokemons = File.readlines("Inventory_pokemon.txt")
 Ascii = File.readlines("ascii.txt")
 
 def initFight(enemyPokemon)
-  puts pokemon + " wishes to fight!"
+  puts enemyPokemon + " wishes to fight!"
   puts "Please select pokemon to fight with!"
   showpokemons()
   puts "write the number of the pokemon or name. example: '1' or 'bulbasaur'"
-  youPokemonIndex = choosePokemon()
-  yourPokemon = Pokemon.new(Pokemons[yourPokemonIndex])
+  pokemon_choice = gets.chomp
+  yourPokemonIndex = choosePokemon(pokemon_choice)
+  p Pokemons[yourPokemonIndex]
+  pokemonArray = Pokemons[yourPokemonIndex][0].chomp.split(",")
+  yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i)
   puts yourPokemon
   enemyLvl = yourPokemon.lvl + rand(-2..2)
   if enemyLvl < 1
@@ -17,7 +20,7 @@ def initFight(enemyPokemon)
   end
   enemyMaxhp = rand(50..300)
   enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
-  fight(enemyPokeon, yourPokemon)
+  fight(enemyPokemon, yourPokemon)
 end
 
 def showpokemons()
@@ -31,7 +34,6 @@ def showpokemons()
 end
 
 def choosePokemon(pokemonOfChoice)
-
   if pokemonOfChoice == pokemonOfChoice.to_i.to_s
     pokemonOfChoice = pokemonOfChoice.to_i
     if Pokemons[pokemonOfChoice-1] != nil
@@ -78,7 +80,6 @@ def showGUI(pokemon)
       end   
     break
     end
-    
   end
   z = start
     while z != endpos
@@ -100,12 +101,18 @@ end
 
 def availableMoves(pokemon)
   lvl = pokemon.lvl
-
-  if lvl < 2
-    
-  elsif lvl == 2
-  elsif lvl == 3
-  else
+  abilities = 
+  moves = [abilities[0]]
+  if lvl >= 2
+    moves <<  abilities[1]
+    if lvl >= 3
+      moves << abilities[2] 
+      if lvl >= 4
+        moves << abilities[3]
+      end
+    end
   end
   return moves
 end
+
+initFight("squirtle")

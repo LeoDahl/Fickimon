@@ -2,13 +2,19 @@ require 'uri'
 require 'json'
 require 'net/http'
 
-enemies = [squirtle, pikachu, bulbasaur]
+enemies = ["squirtle", "pikachu", "bulbasaur"]
 
 class Pokemon
   attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, 
   :effects, :effectduration, :dmgmult
-  def initialize(name, pokemon_id, maxhp, hp, lvl, xp, pokemon_abilities)
-    @abilities = pokemon_abilities
+  def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
+    if name == "squirtle" # GÖR OM DETTA TILL CASE
+      @abilities = ["attack", "waterfall", "weaken"]
+    elsif name == "bulbasaur"
+      @abilities = ["attack", "grassattack", "groundattack"]
+    elsif name == "charmander"
+      @abilities = ["attack", "burn", "strengthen"]
+    end
     @id = pokemon_id
     @effects = effects
     @name = name
@@ -67,7 +73,7 @@ class Abilities
 end
 
 ## Create current ability
-BasicAttack = Abilities.new(nil, "Basic", "Basic Attack", "Attack", 10, nil)
+BasicAttack = Abilities.new("Basic", "Basic Attack", "Attack", 10, nil)
 GrassAttack = Abilities.new("Grass", "Grass Attack", "Attack", 20, nil)
 FlyAway = Abilities.new("Flying", "Fly away", "immune", nil, 1)
 Burn = Abilities.new("Fire", "Burn", "lasting_attack", 5, 3)
