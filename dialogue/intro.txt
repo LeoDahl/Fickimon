@@ -1,5 +1,7 @@
-#today is the first day as a pokemon trainer, im so excited to meed my new pokemon! First i have to choose a name#
+today is the first day as a pokemon trainer, im so excited to meed my new pokemon! First i have to choose a name
 |input|
-#mom: dont forget to eat your breakfast {name}. A full belly is needed to train pokemon. Do you want cereal or eggs#
-|cereal||eggs|
-#"nom" "nom"#
+mom: dont forget to eat your breakfast {name}. A full belly is needed to train pokemon. Do you want cereal or eggs
+|cereal eggs|
+"nom" "nom"
+lkdmfsldkflkflskdnfksdnfsdkfln
+|yes/no|
