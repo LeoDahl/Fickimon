@@ -5,37 +5,37 @@
 def intro(dialoguePart)
     text = File.read(dialoguePart)
 
-    dialogue = false
+
+    choiceEndOrStart = 0
 
     choiceArr = []
 
+    numberOfChoices = 0
+
     for i in 0..text.length
 
-        if dialogue == true
-            #print text[i]
-            #choiceArr = []
-            p choiceArr
-        else
-            if text[i] != "#" && text[i] != "\n"
+        if text[i] == "|"
+            choiceEndOrStart += 1
+        end
+
+        if choiceEndOrStart == 1
+            numberOfChoices += 1
+            if text[i] != "|"
                 choiceArr.push(text[i])
             end
+        elsif choiceEndOrStart == 2
+            input = gets.chomp
+            if input != choiceArr.join
 
-            
-        end
-
-
-        if text[i] == "#"
-            if dialogue == false
-                dialogue = true
+            if choiceArr.join() == "input"
+            elsif choiceArr.join() == "yes/no"
             else
-                dialogue = false
+
             end
-        end
-
-        
-
+            choiceEndOrStart = 0
+            choiceArr = []
+        end                       
     end
-
 end
 
 def checkForHash(bool, arr, index)
