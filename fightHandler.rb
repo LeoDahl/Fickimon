@@ -101,15 +101,13 @@ end
 
 def availableMoves(pokemon)
   lvl = pokemon.lvl
-  abilities = 
+  abilities = pokemon.abilities
+  p abilities
   moves = [abilities[0]]
   if lvl >= 2
     moves <<  abilities[1]
     if lvl >= 3
       moves << abilities[2] 
-      if lvl >= 4
-        moves << abilities[3]
-      end
     end
   end
   return moves

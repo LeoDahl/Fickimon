@@ -6,22 +6,24 @@ enemies = ["squirtle", "pikachu", "bulbasaur"]
 
 class Pokemon
   attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, 
-  :effects, :effectduration, :dmgmult
+  :effects, :effectduration, :dmgmult, :abilities
   def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
-    if name == "squirtle" # GÖR OM DETTA TILL CASE
-      @abilities = ["attack", "waterfall", "weaken"]
-    elsif name == "bulbasaur"
-      @abilities = ["attack", "grassattack", "groundattack"]
-    elsif name == "charmander"
-      @abilities = ["attack", "burn", "strengthen"]
-    end
     @id = pokemon_id
-    @effects = effects
-    @name = name
+    @name = name.upcase
     @maxhp = maxhp
     @hp = hp
     @lvl = lvl
     @xp = xp
+    case @name
+    when "SQUIRTLE" # GÖR OM DETTA TILL CASE
+      @abilities = ["attack", "waterfall", "weaken"]
+    when "BULBASAUR"
+      @abilities = ["attack", "grassattack", "groundattack"]
+    when "CHARMANDER"
+      @abilities = ["attack", "burn", "strengthen"]
+    else
+      @abilities = []
+    end
   end
   def takeDamage(dmg)
     @hp = @hp - dmg
