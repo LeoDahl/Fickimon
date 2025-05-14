@@ -2,10 +2,10 @@ require 'uri'
 require 'json'
 require 'net/http'
 
-enemies = ["squirtle", "pikachu", "bulbasaur"]
+enemies = ["squirtle", "charmander", "bulbasaur"]
 
 class Pokemon
-  attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, :abilities
+  attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, :abilities, :type
   def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
     @id = pokemon_id
     @name = name.upcase
@@ -16,12 +16,16 @@ class Pokemon
     case @name
     when "SQUIRTLE"
       @abilities = ["attack", "waterfall", "weaken"]
+      @type = "water"
     when "BULBASAUR"
       @abilities = ["attack", "grassattack", "groundattack"]
+      @type = "grass"
     when "CHARMANDER"
       @abilities = ["attack", "burn", "strengthen"]
+      @type = "fire"
     else
       @abilities = []
+      @type = "normal"
     end
   end
   def takeDamage(dmg)

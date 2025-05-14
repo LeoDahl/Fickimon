@@ -1,16 +1,21 @@
 #dialogue file should match the part of the game you're in
 
-#require_relative "dialogue/dialogueTest.rb"
+#last input of the file determines path(important choice)
 
-def intro(dialoguePart)
+input = ""
+
+def dialogueHandler(dialoguePart)
     text = File.read(dialoguePart)
 
+    input = ""
 
     choiceEndOrStart = 0
 
     choiceArr = []
 
     numberOfChoices = 0
+
+    choiceError = false
 
     for i in 0..text.length
 
@@ -24,29 +29,58 @@ def intro(dialoguePart)
                 choiceArr.push(text[i])
             end
         elsif choiceEndOrStart == 2
-            input = gets.chomp
-            if input != choiceArr.join
 
             if choiceArr.join() == "input"
+                input = gets.chomp
+                
             elsif choiceArr.join() == "yes/no"
-            else
 
+                print("type y for yes and n for no: ");
+                input = gets.chomp
+
+                if input != "y"|| input != "n" 
+
+                    choiceError = true
+                    while choiceError == true
+
+                        print("ERROR, type y for yes and n for no: ");
+                        input = gets.chomp
+
+                        if input == "y"|| input == "n"
+                            choiceError = false
+                        end
+
+                    end
+                end
+
+            else
+                input = gets.chomp
+
+                if choiceArr.join().include? input
+                    print("your choice: #{input}")
+                else
+                    choiceError = true
+                    while choiceError == true
+                        print("Your choices are #{choiceArr.join()}: ")
+                        input = gets.chomp
+                        if choiceArr.join().include? input
+                            print("your choice: #{input}")
+                            choiceError = false
+                        end
+                    end
+                end
             end
+
             choiceEndOrStart = 0
             choiceArr = []
-        end                       
-    end
-end
-
-def checkForHash(bool, arr, index)
-    if arr[index] == "#"
-        if bool == false
-            bool = true
         else
-            bool = false
-        end
+            print(text[i])
+            sleep(0.05)
+        end                   
     end
+    return input
 end
 
-p intro("dialogue/intro.txt")
+
+dialogueHandler("dialogue/intro.txt")
 
