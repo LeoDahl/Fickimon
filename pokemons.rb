@@ -5,8 +5,7 @@ require 'net/http'
 enemies = ["squirtle", "pikachu", "bulbasaur"]
 
 class Pokemon
-  attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, 
-  :effects, :effectduration, :dmgmult, :abilities
+  attr_accessor :name, :id, :lvl, :xp, :maxhp, :hp, :abilities
   def initialize(name, pokemon_id, maxhp, hp, lvl, xp)
     @id = pokemon_id
     @name = name.upcase
@@ -15,7 +14,7 @@ class Pokemon
     @lvl = lvl
     @xp = xp
     case @name
-    when "SQUIRTLE" # GÖR OM DETTA TILL CASE
+    when "SQUIRTLE"
       @abilities = ["attack", "waterfall", "weaken"]
     when "BULBASAUR"
       @abilities = ["attack", "grassattack", "groundattack"]
