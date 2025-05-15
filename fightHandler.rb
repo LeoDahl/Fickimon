@@ -1,6 +1,8 @@
 require_relative 'pokemons.rb'
 
 Pokemons = File.readlines("Inventory_pokemon.txt")
+counterTypeMult = 1.4
+badTypeMult = 0.7
 p Pokemons
 
 i = 0
@@ -27,16 +29,18 @@ def initFight(enemyPokemon)
     pokemon_choice = gets.chomp
     yourPokemonIndex = choosePokemon(pokemon_choice)
   end
+  puts "pokemonarray: #{Pokemons[yourPokemonIndex]}"
   pokemonArray = Pokemons[yourPokemonIndex][0].chomp.split(",")
   yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i)
-  puts yourPokemon
   enemyLvl = rand(1..5)
   if enemyLvl > 2
     enemyMaxhp = rand(120..300)
   else
     enemyMaxhp = rand(50..200)
   end
-  enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
+  enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyLvl, 0, enemyMaxhp, enemyMaxhp)
+  puts "You are fighting against a level #{enemyPokemon.level} #{enemyPokemon.name}!"
+  puts "You have a level #{yourPokemon.returnLvl()} #{yourPokemon.name}!"
   fight(enemyPokemon, yourPokemon)
 end
 
@@ -48,27 +52,28 @@ def fight(enemy, ally)
   inFight = true
   allyMoves = availableMoves(ally)
   enemyMoves = availableMoves(enemy)
-  allyMult = calcDmgMult(ally.lvl.to_i)
-  enemyMult = calcDmgMult(enemy.lvl.to_i)
-  counterTypeMult = 1.4
-  badTypeMult = 0.7
+  allyMult = calcDmgMult(ally.level.to_i)
+  enemyMult = calcDmgMult(enemy.level.to_i)
   while inFight
     puts "Choose your move against #{enemy.name}!"
     moves = 0
     while moves < allyMoves.length
-      puts ((1+moves).to_s + " " + allyMoves[moves].to_s)
+      puts ((1+moves).to_s + ". " + allyMoves[moves].to_s)
       moves += 1
     end
     choosenMove = gets.chomp
     i = 0
+    puts "allymoves: #{allyMoves.length}"
     while i < allyMoves.length do
-      if choosenMove == allyMoves[i]
-        # If move has been found in arr
-        ## Find move dmg?
-        ## Temp dmg
-        ability = ally.GetAbilityObjekt(choosenMove.upcase)
-        allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
-    end
+          puts "You chose: #{choosenMove}"
+          attack = chooseAttack(choosenMove, allyMoves)
+          chosenAttack = allyMoves[attack]
+          puts "chosenAttack: #{chosenAttack}"
+          ability = ally.GetAbilityObjekt(chosenAttack.upcase)
+          p ability==nil
+          allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
+          i = i + 1
+      end
   end
 end
 
@@ -84,13 +89,14 @@ end
 # Example: doDmgTo(enemy_pokemon, Weaken, 1.0, 1.0) # => recieverMult becomes 0.8 (lowers enemy's damage multiplier)
 # Example: doDmgTo(enemy_pokemon, Strengthen, 1.0, 1.0) # => attackerMult becomes 1.2 (raises user's damage multiplier)
 def doDmgTo(reciever, move, attackerMult, recieverMult)
+  dmg = 0
   case move.name
     when "Basic Attack" 
       dmg = (Attack.dmg * attackerMult).round(0)
       reciever.takeDamage(dmg)   
     when "Ground attack" 
       dmg = reciever.takeDamage((GroundAttack.dmg * attackerMult).round(0))
-    when "Grass Attack"    
+    when "Grass Attack"    ## Grass attack counters water & fire?
       dmg = GrassAttack.dmg * attackerMult
       if reciever.type == "water"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
@@ -123,10 +129,9 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
       attackerMult *= 1.2    
     end
     puts "dmg - #{dmg}"
+    puts reciever.name + " has" + " " + reciever.hp.to_s + " HP left"
     puts ((reciever.hp).to_s)
     return [attackerMult, recieverMult]
-  end
-  i += 1
 end
 
 # Description: This function calculates the damage multiplier depending on what lvl the pokemon is
@@ -145,7 +150,7 @@ end
 def showpokemons()
   i = 0
   while i < Pokemons.length
-    puts "#{i+1}. #{Pokemons[i][0]} lvl.#{Pokemons[i][4]}"
+    puts "#{i+1}. #{Pokemons[i][0]} lvl.#{Pokemons[i][2]}"
     i += 1
   end
 end
@@ -168,6 +173,22 @@ def choosePokemon(pokemonOfChoice)
     puts "Inga decimaler är tillåtna"
   else
     return nameMatch(pokemonOfChoice)
+  end
+end
+## Same but attacks
+def chooseAttack(attackofChoice, allyMoves)
+  if attackofChoice == attackofChoice.to_i.to_s
+    attackofChoice = attackofChoice.to_i
+    if allyMoves[attackofChoice-1] != nil
+      return attackofChoice-1
+    else
+        puts "You do not have a pokemon with that index"
+    end
+  elsif attackofChoice == attackofChoice.to_f.to_s
+    puts "Inga decimaler är tillåtna"
+  else
+    puts "valid"
+    return attackMatch(attackofChoice, allyMoves)
   end
 end
 
@@ -215,6 +236,49 @@ def nameMatch(nameGiven)
   return nil
 end
 
+## TO BE FIXED - LEO DAHL
+def attackMatch(attackGiven, allyMoves) 
+  puts "attackMatch"
+  nameGiven = attackGiven.upcase
+  p allyMoves
+  i = 0
+  bestMatch = 0
+  bestMatchIndex = nil
+  while i < allyMoves.length
+    u = 0
+    matches = 0
+    while u < allyMoves[i][0].length
+      if attackGiven[u] == allyMoves[i][0][u]
+        matches += 1
+      end
+      u += 1
+    end
+    puts "matches: #{matches}"
+    if matches == allyMoves[i][0].length
+      return i
+    end
+    if matches >= bestMatch
+      bestMatch = matches
+      bestMatchIndex = i
+    end
+    i += 1
+  end
+  puts "could not find the a pokemon with the name of: '#{nameGiven}'"
+  puts "did you mean: '#{allyMoves[bestMatchIndex]}'?"
+  puts "'yes' or 'no'?"
+  answer = gets.chomp
+  while answer != "yes" && answer != "no"
+    puts "answer not valid, please try again"
+    puts "did you mean: '#{allyMoves[bestMatchIndex][0]}'?"
+    puts "'yes' or 'no'?"
+    answer = gets.chomp
+  end
+  if answer == "yes"
+    return bestMatchIndex
+  end
+  return nil
+end
+
 
 def showGUI(pokemon)
   ## Step 1, find pikachu (or corresponding pokemon)
@@ -245,8 +309,10 @@ end
 # Returns: Array - the available moves for the given pokemon depending on the level
 # Example: availableMoves(charmander) returns ["attack", "burn", "strengthen"]
 # Example: availableMoves(bulbasaur) returns ["attack", "grassattack", "groundattack"]
-def availableMoves(pokemon)
-  lvl = pokemon.lvl
+def availableMoves(pokemon) ### FOR SOME REASON RETURNS 0 AS LEVEL. TO BE FIXED - LEO DAHL
+  lvl = pokemon.level
+  puts "name: #{pokemon.name}"
+  puts "lvl: #{pokemon.level}"
   abilities = pokemon.abilities
   moves = [abilities[0]]
   if lvl >= 2
