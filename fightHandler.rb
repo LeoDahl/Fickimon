@@ -41,15 +41,15 @@ def initFight(enemyPokemon)
 end
 
 # Description: This function handles the fight between the player and the enemy
-# Argument: Pokemon - the enemy pokemon
-# Argument: Pokemon - the player pokemon
+# Argument 1: Objekt - the enemy pokemon
+# Argument 2: Objekt - the player pokemon
 # Returns: None
 def fight(enemy, ally)
   inFight = true
   allyMoves = availableMoves(ally)
   enemyMoves = availableMoves(enemy)
-  allyMult = calcDmgMult(ally.lvl)
-  enemyMult = calcDmgMult(enemy.lvl)
+  allyMult = calcDmgMult(ally.lvl.to_i)
+  enemyMult = calcDmgMult(enemy.lvl.to_i)
   counterTypeMult = 1.4
   badTypeMult = 0.7
   while inFight
@@ -67,42 +67,77 @@ def fight(enemy, ally)
         ## Find move dmg?
         ## Temp dmg
         ability = ally.GetAbilityObjekt(choosenMove.upcase)
-        case ability.name
-          when "Basic Attack" 
-            dmg = (Attack.dmg * allyMult).round(0)
-            enemy.takeDamage(dmg)   
-          when "Ground attack" 
-            dmg = enemy.takeDamage((GroundAttack.dmg * allyMult).round(0))
-          when "Grass Attack"    
-            dmg = GrassAttack.dmg * allyMult
-            if enemy.type == "water"
-              enemy.takeDamage((dmg * counterTypeMult).round(0))
-            elsif enemy.type == "fire"
-              enemy.takeDamage((dmg * counterTypeMult).round(0))
-            else
-              enemy.takeDamage(dmg)
-            end
-          when "Burn"            
-          when "Waterfall"       
-          when "Weaken"
-            enemyMult *= 0.8          
-          when "Strengthen"  
-            allyMult *= 1.2    
-        end
-        puts ((enemy.hp).to_s)
-        break
-      end
-      i += 1
+        allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
     end
   end
 end
 
+# Description: This function does dmg to the reciever depending on its type, ability used and the attacker damage multiplier. It could also increase the attacker's damage multiplier or decrease the reciever's damage multiplier.
+# Argument 1: Objekt - Either the enemy or the player's pokemon
+# Argument 2: Objekt - The ability used
+# Argument 3: Float - The damage multiplier of the pokemon attacking
+# Argument 4: Float - The damage multiplier of the pokemon being attacked
+# Returns: Array - an array of the updated attackerMult and recieverMult
+# Example: enemy_pokemon.type = "grass" doDmgTo(enemy_pokemon, Attack, 1.2, 1.0) # => Deals 12 damage to enemy_pokemon
+# Example: enemy_pokemon.type = "water" doDmgTo(enemy_pokemon, GrassAttack, 1.0, 1.0) # => Deals 14 damage (badTypeMult applied)
+# Example: enemy_pokemon.type = "grass" # => doDmgTo(enemy_pokemon, Burn, 1.0, 1.0) # => Deals 21 damage (counterTypeMult applied)
+# Example: doDmgTo(enemy_pokemon, Weaken, 1.0, 1.0) # => recieverMult becomes 0.8 (lowers enemy's damage multiplier)
+# Example: doDmgTo(enemy_pokemon, Strengthen, 1.0, 1.0) # => attackerMult becomes 1.2 (raises user's damage multiplier)
+def doDmgTo(reciever, move, attackerMult, recieverMult)
+  case move.name
+    when "Basic Attack" 
+      dmg = (Attack.dmg * attackerMult).round(0)
+      reciever.takeDamage(dmg)   
+    when "Ground attack" 
+      dmg = reciever.takeDamage((GroundAttack.dmg * attackerMult).round(0))
+    when "Grass Attack"    
+      dmg = GrassAttack.dmg * attackerMult
+      if reciever.type == "water"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      elsif reciever.type == "fire"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      else
+        reciever.takeDamage(dmg)
+      end
+    when "Burn"
+      dmg = Waterfall.dmg * attackerMult
+      if reciever.type == "grass"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      elsif reciever.type == "water"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      else
+        reciever.takeDamage(dmg)
+      end            
+    when "Waterfall"
+      dmg = Waterfall.dmg * attackerMult
+      if reciever.type == "fire"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      elsif reciever.type == "grass"
+        reciever.takeDamage((dmg * counterTypeMult).round(0))
+      else
+        reciever.takeDamage(dmg)
+      end       
+    when "Weaken"
+      recieverMult *= 0.8          
+    when "Strengthen"  
+      attackerMult *= 1.2    
+    end
+    puts "dmg - #{dmg}"
+    puts ((reciever.hp).to_s)
+    return [attackerMult, recieverMult]
+  end
+  i += 1
+end
+
 # Description: This function calculates the damage multiplier depending on what lvl the pokemon is
-# Argument
+# Argument: int - The lvl of the pokemon
+# Returns: float or int - The damage multiplier of the pokemon
+# Example: calcFmgMult(1) returns 1
+# Example: calcFmgMult(2) returns 1.2
+# Example: calcFmgMult(3) returns 1.4
 def calcDmgMult(pokemonLvl)
-  p pokemonLvl
   mult = 1
-  mult += (pokemonLvl) * 0.1
+  mult += (pokemonLvl-1) * 0.2
   return mult
 end
 
@@ -126,6 +161,8 @@ def choosePokemon(pokemonOfChoice)
     pokemonOfChoice = pokemonOfChoice.to_i
     if Pokemons[pokemonOfChoice-1] != nil
       return pokemonOfChoice-1
+    else
+      puts "You do not have a pokemon with that index"
     end
   elsif pokemonOfChoice == pokemonOfChoice.to_f.to_s
     puts "Inga decimaler är tillåtna"
@@ -138,7 +175,7 @@ end
 # Argument: String - the name of the pokemon given by the player
 # Returns: Integer - the index of the pokemon in the Pokemons array
 # Example: nameMatch("bulbasaur") returns 0 if bulbasaur is the first pokemon in the Pokemons array
-# Example: choosePokemon("daddafefs") asks the player if they meant a similar name and returns the index of that pokemon if the player answers "yes" else nil
+# Example: choosePokemon("bulasdefsdf") asks the player if they meant a similar name, in this case bulbasaur, and returns the index of that pokemon if the player answers "yes" else nil
 def nameMatch(nameGiven) 
   nameGiven = nameGiven.upcase
   i = 0
