@@ -13,6 +13,8 @@ def dialogueHandler(dialoguePart)
 
     choiceArr = []
 
+    allChoices = []
+
     numberOfChoices = 0
 
     choiceError = false
@@ -27,6 +29,7 @@ def dialogueHandler(dialoguePart)
             numberOfChoices += 1
             if text[i] != "|"
                 choiceArr.push(text[i])
+                allChoices.push(text[i])
             end
         elsif choiceEndOrStart == 2
 
@@ -71,14 +74,34 @@ def dialogueHandler(dialoguePart)
                 end
             end
 
+            if lastChoice(allChoices, choiceArr) == false
+                choiceArr = []
+            end
+
             choiceEndOrStart = 0
-            choiceArr = []
+            
         else
             print(text[i])
-            sleep(0.05)
+            #sleep(0.05)
         end                   
     end
-    return input
+    p [input, choiceArr]
+end
+
+def lastChoice(allChoices, choiceArr)
+    matchCount = 0;
+
+    for i in (allChoices.length-choiceArr.length)..allChoices.length-1
+        if allChoices[i] == choiceArr[i]
+            matchCount += 1
+        end
+    end
+
+    if matchCount == choiceArr.length-1
+        return true
+    else
+        return false
+    end
 end
 
 
