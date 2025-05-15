@@ -30,11 +30,12 @@ def initFight(enemyPokemon)
   pokemonArray = Pokemons[yourPokemonIndex][0].chomp.split(",")
   yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i)
   puts yourPokemon
-  enemyLvl = yourPokemon.lvl + rand(-2..2)
-  if enemyLvl < 1
-    enemyLvl = 1
+  enemyLvl = rand(1..5)
+  if enemyLvl > 2
+    enemyMaxhp = rand(120..300)
+  else
+    enemyMaxhp = rand(50..200)
   end
-  enemyMaxhp = rand(50..300)
   enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyMaxhp, enemyMaxhp, enemyLvl, 0)
   fight(enemyPokemon, yourPokemon)
 end
@@ -47,6 +48,10 @@ def fight(enemy, ally)
   inFight = true
   allyMoves = availableMoves(ally)
   enemyMoves = availableMoves(enemy)
+  allyMult = calcDmgMult(ally.lvl)
+  enemyMult = calcDmgMult(enemy.lvl)
+  counterTypeMult = 1.4
+  badTypeMult = 0.7
   while inFight
     puts "Choose your move against #{enemy.name}!"
     moves = 0
@@ -61,13 +66,44 @@ def fight(enemy, ally)
         # If move has been found in arr
         ## Find move dmg?
         ## Temp dmg
-        enemy.takeDamage(10)
+        ability = ally.GetAbilityObjekt(choosenMove.upcase)
+        case ability.name
+          when "Basic Attack" 
+            dmg = (Attack.dmg * allyMult).round(0)
+            enemy.takeDamage(dmg)   
+          when "Ground attack" 
+            dmg = enemy.takeDamage((GroundAttack.dmg * allyMult).round(0))
+          when "Grass Attack"    
+            dmg = GrassAttack.dmg * allyMult
+            if enemy.type == "water"
+              enemy.takeDamage((dmg * counterTypeMult).round(0))
+            elsif enemy.type == "fire"
+              enemy.takeDamage((dmg * counterTypeMult).round(0))
+            else
+              enemy.takeDamage(dmg)
+            end
+          when "Burn"            
+          when "Waterfall"       
+          when "Weaken"
+            enemyMult *= 0.8          
+          when "Strengthen"  
+            allyMult *= 1.2    
+        end
         puts ((enemy.hp).to_s)
         break
       end
       i += 1
     end
   end
+end
+
+# Description: This function calculates the damage multiplier depending on what lvl the pokemon is
+# Argument
+def calcDmgMult(pokemonLvl)
+  p pokemonLvl
+  mult = 1
+  mult += (pokemonLvl) * 0.1
+  return mult
 end
 
 # Description: This function shows the available pokemons in the players inventory
@@ -191,7 +227,7 @@ end
 # Example: capturePokemons(charmander) returns nil
 def capturePokemon(pokemon)
   i = 0
-  newId = 1
+  id = 1
   while i < Pokemons.length
     if Pokemons[i][0] == pokemon.name
       puts "You already have this pokemon! Do you want to swap this pokemon with the one you have in your inventory?"
@@ -207,7 +243,7 @@ def capturePokemon(pokemon)
       end
       if answer == "yes"
         puts "You swapped your pokemon!"
-        Pokemons[i] = [pokemon.name, newId, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
+        Pokemons[i] = [pokemon.name, id, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
         File.open("Inventory_pokemon.txt", "w") do |file|
           u = 0
           while u < Pokemons.length
@@ -227,10 +263,9 @@ def capturePokemon(pokemon)
   end
   puts "You captured a #{pokemon.name}!"
   File.open("Inventory_pokemon.txt", "a") do |file|
-    file.puts "#{pokemon.name},#{newId},#{pokemon.maxhp},#{pokemon.hp},#{pokemon.lvl},#{pokemon.xp},"
-    Pokemons << [pokemon.name, newId, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
+    file.puts "#{pokemon.name},#{id},#{pokemon.maxhp},#{pokemon.hp},#{pokemon.lvl},#{pokemon.xp},"
+    Pokemons << [pokemon.name, id, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
   end
 end
 
-capturePokemon(Pokemon.new("SQUIRTLE","2","12","2","1","0"))
 initFight("squirtle")

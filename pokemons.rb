@@ -45,6 +45,24 @@ class Pokemon
       @lvl += 1
     end
   end
+  def GetAbilityObjekt(ability)
+    case ability
+    when "GROUNDATTACK"
+      return GroundAttack
+    when "ATTACK"
+      return Attack
+    when "GRASSATTACK"
+      return GrassAttack
+    when "BURN"
+      return Burn
+    when "WATERFALL"
+      return Waterfall
+    when "WEAKEN"
+      return Weaken
+    when "STRENGTHEN"
+      return Strengthen
+    end
+  end
 end
 class Abilities
   attr_accessor :type, :name, :ability, :dmg, :rounds
@@ -55,35 +73,16 @@ class Abilities
     @dmg = dmg
     @rounds = rounds
   end
-  def UseAbility()
-    case ability
-    when "immune"
-      # Do immune things
-    when "attack"
-      # Do attack thing
-    when "lasting_attack"
-      # Do lasting attack thing
-    when "sleep"
-      # Do stun thing
-    when "weaken"
-      # Do make opponent mult weaker thing
-    when "strengthen"
-      # Do gym gains mult thing
-    when "clash"
-      # Do both take the pokemon with least hp damage thing
-    when "life_steal"
-      # Do take hp thing
-    end
-  end
 end
 
 ## Create current ability
-BasicAttack = Abilities.new("Basic", "Basic Attack", "Attack", 10, nil)
+Attack = Abilities.new("Basic", "Basic Attack", "Attack", 10, nil)
 GrassAttack = Abilities.new("Grass", "Grass Attack", "Attack", 20, nil)
-FlyAway = Abilities.new("Flying", "Fly away", "immune", nil, 1)
+Strengthen = Abilities.new("PowerUp", "Strengthen", "UpgradeStrength", 0, nil)
 Burn = Abilities.new("Fire", "Burn", "lasting_attack", 5, 3)
-Waterfall = Abilities.new("Water", "Water attack", "Attack", 15, nil)
+Waterfall = Abilities.new("Water", "Waterfall", "Attack", 15, nil)
 GroundAttack = Abilities.new("Ground", "Ground attack", "Sleep", 0, 1)
+Weaken = Abilities.new("PowerDown", "Weaken", "DowngradeStrength", 0, nil)
 
 
 def init()
