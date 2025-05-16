@@ -1,7 +1,7 @@
 today is the first day as a pokemon trainer, im so excited to meed my new pokemon! First i have to choose a name
 |input|
 mom: {input} dont forget to eat your breakfast. A full belly is needed to train pokemon. Do you want cereal or eggs
-|cereal, eggs|
+|cereal,eggs|
 "nom" "nom"
-pickachu suddenly jumps into your food, eat pickahu?
-|yes/no|
+are you ready to start your new adventure or do you wanna stay home today?
+|start,stay|

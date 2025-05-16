@@ -19,7 +19,7 @@ require_relative "pokemons.rb"
 
 
 
-def game_start()
+def game_start() # LUCAS
   enemies = ["squirtle", "charmander", "bulbasaur"]
   main = true
   while main
@@ -30,15 +30,14 @@ def game_start()
 
     #Get rows
     optionRows = options.readlines()
-
-    puts "Type Start to begin!"
     notValid = true
 
-    input = gets.chomp
-    validInputs = ["Start", "start"]
-    i = 0 
+    validInputs = ["Start", "start"] 
     while notValid
+      puts "Type Start to begin!"
+      input = gets.chomp
       notValid = true
+      i = 0
       while i < validInputs.length
         if input == validInputs[i]
           notValid = false
@@ -46,16 +45,21 @@ def game_start()
         i += 1
       end
     end
-    if notValid
-      puts "Invalid input, please try again"
-      puts "Type Start to begin!"
-      input = gets.chomp
-    end
-    # puts get_Dialogue(input.to_i) <---- Fungerar inte
 
+    # puts get_Dialogue(input.to_i) <---- Fungerar inte
+        #Här startar spelet
     puts "Welcome to the world of Pokemon!"
+
+    if pathHandler("intro.txt", "exitHouse.txt", "stayHouse.txt") == "exitHouse.txt"
+      #här bestäms paths
+      if pathHandler("exitHouse.txt", "fight.txt", "notFight.txt") == "fight.txt"
+        #slåss
+      end
+    elsif pathHandler("intro.txt", "exitHouse.txt", "stayHouse.txt") == "stayHouse.txt"
+    end
     enemyIndex = rand(0..enemies.length-1)
     initFight(enemies[enemyIndex])
+    # Efter fighthandler
   end
 end
 

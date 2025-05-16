@@ -2,6 +2,8 @@
 
 #last input of the file determines path(important choice)
 
+#when yes or no question yes is ALWAYS first
+
 def dialogueHandler(dialoguePart)
     text = File.read(dialoguePart)
 
@@ -46,37 +48,37 @@ def dialogueHandler(dialoguePart)
             if choice.join() == "input"
                 input = gets.chomp
                 
-            elsif choice.join() == "yes/no"
+            # elsif choice.join() == "yes/no"
 
-                print("type y for yes and n for no: ");
-                input = gets.chomp
+            #     print("type yes or no: ");
+            #     input = gets.chomp
 
-                if input != "y"|| input != "n" 
+            #     if input != "yes"|| input != "no" 
 
-                    choiceError = true
-                    while choiceError == true
+            #         choiceError = true
+            #         while choiceError == true
 
-                        print("ERROR, type y for yes and n for no: ");
-                        input = gets.chomp
+            #             print("ERROR, type yes or no: ");
+            #             input = gets.chomp
 
-                        if input == "y"|| input == "n"
-                            choiceError = false
-                        end
+            #             if input == "yes"|| input == "no"
+            #                 choiceError = false
+            #             end
 
-                    end
-                end
+            #         end
+            #     end
 
             else
                 input = gets.chomp
 
-                if choice.join().include? input
+                if choice.join().split(",").include? input
                     print("your choice: #{input}")
                 else
                     choiceError = true
                     while choiceError == true
                         print("Your choices are #{choice.join()}: ")
                         input = gets.chomp
-                        if choice.join().include? input
+                        if choice.join().split(",").include? input
                             print("your choice: #{input}")
                             choiceError = false
                         end
@@ -85,35 +87,33 @@ def dialogueHandler(dialoguePart)
             end
 
             if lastChoice(allChoices, choice) == false
-                choiceArr = []
+                choice = []
             end  
             choiceEndOrStart = 0     
         else
             print(text[i])
-            #sleep(0.05)
+            sleep(0.05)
         end
            
     end
 
-    p [input, choiceArr, allChoices]
+    return [input, choice.join().split(",")]
 end
 
 def lastChoice(allChoicesArr, choiceArr)
     matchCount = 0;
+    startValue = (allChoicesArr.length-choiceArr.length)
 
-    for i in (allChoices.length-choiceArr.length)..allChoices.length #ändra om
-        if choiceArr[i] == allChoices[i]
-            matchCount += 1
+    for i in (allChoicesArr.length-choiceArr.length)..allChoicesArr.length-1
+        if choiceArr[i-startValue] == allChoicesArr[i]
+            matchCount = matchCount + 1
         end
     end
 
-    if matchCount == choiceArr.length #här också
+    if matchCount == choiceArr.length
         return true
     else
         return false
     end
 end
-
-
-dialogueHandler("dialogue/intro.txt")
 

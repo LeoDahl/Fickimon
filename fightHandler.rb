@@ -1,7 +1,6 @@
 require_relative 'pokemons.rb'
 
 Pokemons = File.readlines("Inventory_pokemon.txt")
-p Pokemons
 
 i = 0
 # This will split the lines in the file into an array of arrays
@@ -16,29 +15,31 @@ Ascii = File.readlines("ascii.txt")
 # Argument: String - the name of the enemy pokemon
 # Returns: None
 # Example: initFight("squirtle") will create a squirtle enemy and start the fight
-
-def initFight(enemyPokemon)
+def initFight(enemyPokemon) 
   puts enemyPokemon + " wishes to fight!"
+  showGUI(enemyPokemon.upcase)
   yourPokemonIndex = nil
-  while yourPokemonIndex == nil
+  while yourPokemonIndex == nil 
     puts "Please select pokemon to fight with!"
-    showpokemons()
-    puts "write the number or name of the pokemon. example: '1' or 'bulbasaur'"
-    pokemon_choice = gets.chomp
-    yourPokemonIndex = choosePokemon(pokemon_choice)
+    showpokemons() ## SHOW POKEMONS
+    puts "write the number or name of the pokemon. example: '1' or 'bulbasaur'" 
+    pokemon_choice = gets.chomp 
+    yourPokemonIndex = choosePokemon(pokemon_choice) 
   end
-  pokemonArray = Pokemons[yourPokemonIndex]
-  yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i)
-  enemyLvl = rand(1..5)
-  if enemyLvl > 2
-    enemyMaxhp = rand(120..300)
-  else
-    enemyMaxhp = rand(50..200)
+  pokemonArray = Pokemons[yourPokemonIndex] 
+  yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i) 
+  ## Create pokemon object
+  showGUI(pokemonArray[0].upcase)
+  enemyLvl = rand(1..5) 
+  if enemyLvl > 2 
+    enemyMaxhp = rand(120..300) 
+  else 
+    enemyMaxhp = rand(50..200) 
   end
-  enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyLvl, 0, enemyMaxhp, enemyMaxhp)
-  puts "You are fighting against a level #{enemyPokemon.level} #{enemyPokemon.name}!"
-  puts "You have a level #{yourPokemon.level} #{yourPokemon.name}!"
-  fight(enemyPokemon, yourPokemon)
+  enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyLvl, 0, enemyMaxhp, enemyMaxhp) ## Create enemy pokemon object
+  puts "You are fighting against a level #{enemyPokemon.level} #{enemyPokemon.name}!" ## Show enemy pokemon
+  puts "You have a level #{yourPokemon.level} #{yourPokemon.name}!" ## Show your pokemon
+  fight(enemyPokemon, yourPokemon) ## Start fight
 end
 
 # Description: This function handles the fight between the player and the enemy
@@ -46,43 +47,70 @@ end
 # Argument 2: Objekt - the player pokemon
 # Returns: None
 # Example: Pokemon.new("CHARMANDER, 1, 1, 1, 1, 1")
-def fight(enemy, ally)
+def fight(enemy, ally) # LUCAS
   inFight = true
-  allyMoves = availableMoves(ally)
-  allyMoves << "Capture"
-  enemyMoves = availableMoves(enemy)
-  allyMult = calcDmgMult(ally.level.to_i)
+  allyMoves = availableMoves(ally) # All moves as an array for ally
+  allyMoves << "Capture" 
+  enemyMoves = availableMoves(enemy) # All moves for enemy
+  allyMult = calcDmgMult(ally.level.to_i) # Mult depending on lvl
   enemyMult = calcDmgMult(enemy.level.to_i)
   while inFight
-    puts "Choose your action against #{enemy.name}!"
-    moves = 0
-    while moves < allyMoves.length
-      puts ((1+moves).to_s + ". " + allyMoves[moves].to_s)
-      moves += 1
+    attack = nil
+    while attack == nil
+      puts "Choose your action against #{enemy.name}!"
+      moves = 0
+      while moves < allyMoves.length
+        puts ((1+moves).to_s + ". " + allyMoves[moves].to_s)
+        moves += 1
+      end
+      choosenMove = gets.chomp
+      attack = chooseAttack(choosenMove, allyMoves)
     end
-    choosenMove = gets.chomp
-    attack = chooseAttack(choosenMove, allyMoves)
     chosenAttack = allyMoves[attack]
-    ability = ally.GetAbilityObjekt(chosenAttack.upcase)
-    hpBefore = enemy.hp
-    allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
-    puts "You dealt: #{hpBefore - enemy.hp} dmg!"
-    ## Check if enemy has fainted
-    if enemy.hp >= 0
-      newxp = (enemy.maxhp)/2
-      puts "#{enemy.name} has fainted! You win!"
-      puts "You gained #{newxp} xp!"
-      break
+
+    if chosenAttack == "Capture" then
+      puts "You tried to capture the enemy pokemon!"
+      successfull = capturePokemon(enemy)
+      if successfull then
+        puts "You captured the enemy pokemon!"
+        break
+      else
+        puts "You did not capture the enemy pokemon!"
+      end
     else
-      puts "#{enemy.name} now has #{enemy.hp} hp"
+      ability = ally.GetAbilityObjekt(chosenAttack.upcase)
+      hpBefore = enemy.hp
+      allyMult, enemyMult = doActionAgainst(enemy, ability, allyMult, enemyMult)
+      puts "You dealt: #{hpBefore - enemy.hp} dmg!"
+      ## Check if enemy has fainted
+      if enemy.hp <= 0
+        newxp = (enemy.maxhp)/2
+        puts "#{enemy.name} has fainted! You win!"
+        puts "You gained #{newxp} xp!"
+        break
+      else
+        puts "Enemy #{enemy.name} now has #{enemy.hp} hp"
+      end
     end
+    puts "--------------------------------------"
+    puts "press 'ENTER' to continue"
+    gets.chomp
     ## Enemy turn
 
     chosenAttack = enemyMoves[rand(0..enemyMoves.length-1)]
     ability = enemy.GetAbilityObjekt(chosenAttack.upcase)
-    enemyMult, allyMult = doDmgTo(ally, ability, enemyMult, allyMult)
-
-   
+    hpBefore = ally.hp
+    enemyMult, allyMult = doActionAgainst(ally, ability, enemyMult, allyMult)
+    if ally.hp <= 0
+      puts "your #{ally.name} has fainted! You lose!"
+      break
+    end
+    puts "Enemy #{enemy.name} used #{chosenAttack}!"
+    puts "You took: #{(hpBefore - ally.hp)} dmg!"
+    puts "Current hp: #{ally.hp}"
+    puts "--------------------------------------"
+    puts "press 'ENTER' to continue"
+    gets.chomp
   end
 end
 
@@ -92,12 +120,12 @@ end
 # Argument 3: Float - The damage multiplier of the pokemon attacking
 # Argument 4: Float - The damage multiplier of the pokemon being attacked
 # Returns: Array - an array of the updated attackerMult and recieverMult
-# Example: enemy_pokemon.type = "grass" doDmgTo(enemy_pokemon, Attack, 1.2, 1.0) # => Deals 12 damage to enemy_pokemon
-# Example: enemy_pokemon.type = "water" doDmgTo(enemy_pokemon, GrassAttack, 1.0, 1.0) # => Deals 14 damage (badTypeMult applied)
-# Example: enemy_pokemon.type = "grass" # => doDmgTo(enemy_pokemon, Burn, 1.0, 1.0) # => Deals 21 damage (counterTypeMult applied)
-# Example: doDmgTo(enemy_pokemon, Weaken, 1.0, 1.0) # => recieverMult becomes 0.8 (lowers enemy's damage multiplier)
-# Example: doDmgTo(enemy_pokemon, Strengthen, 1.0, 1.0) # => attackerMult becomes 1.2 (raises user's damage multiplier)
-def doDmgTo(reciever, move, attackerMult, recieverMult)
+# Example: enemy_pokemon.type = "grass" doActionAgainst(enemy_pokemon, Attack, 1.2, 1.0) # => Deals 12 damage to enemy_pokemon
+# Example: enemy_pokemon.type = "water" doActionAgainst(enemy_pokemon, GrassAttack, 1.0, 1.0) # => Deals 14 damage (badTypeMult applied)
+# Example: enemy_pokemon.type = "grass" # => doActionAgainst(enemy_pokemon, Burn, 1.0, 1.0) # => Deals 21 damage (counterTypeMult applied)
+# Example: doActionAgainst(enemy_pokemon, Weaken, 1.0, 1.0) # => recieverMult becomes 0.8 (lowers enemy's damage multiplier)
+# Example: doActionAgainst(enemy_pokemon, Strengthen, 1.0, 1.0) # => attackerMult becomes 1.2 (raises user's damage multiplier)
+def doActionAgainst(reciever, move, attackerMult, recieverMult) # LEO
   dmg = 0
   counterTypeMult = 1.4
   badTypeMult = 0.7
@@ -121,9 +149,11 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
     when "Burn"
       dmg = Waterfall.dmg * attackerMult
       if reciever.type == "grass"
+        puts "It was super effective!"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
       elsif reciever.type == "water"
         reciever.takeDamage((dmg * badTypeMult).round(0))
+        puts "It was not very effective.."
       else
         reciever.takeDamage(dmg)
       end            
@@ -131,8 +161,10 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
       dmg = Waterfall.dmg * attackerMult
       if reciever.type == "fire"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
+        puts "It was super effective!"
       elsif reciever.type == "grass"
         reciever.takeDamage((dmg * badTypeMult).round(0))
+        puts "It was not very effective.."
       else
         reciever.takeDamage(dmg)
       end       
@@ -150,14 +182,17 @@ end
 # Example: calcFmgMult(1) returns 1
 # Example: calcFmgMult(2) returns 1.2
 # Example: calcFmgMult(3) returns 1.4
-def calcDmgMult(pokemonLvl)
+def calcDmgMult(pokemonLvl) # LUCAS
   mult = 1
   mult += (pokemonLvl-1) * 0.2
   return mult
 end
 
 # Description: This function shows the available pokemons in the players inventory
-def showpokemons()
+# Argument: None
+# Returns: None
+# Example: showpokemons() shows the available pokemons in the players inventory from the Inventory_pokemon.txt file
+def showpokemons() # LEO
   i = 0
   while i < Pokemons.length
     puts "#{i+1}. #{Pokemons[i][0]} lvl.#{Pokemons[i][2]}"
@@ -171,7 +206,7 @@ end
 # Example: choosePokemon("1") returns 0
 # Example: choosePokemon("bulbasaur") returns 0 if bulbasaur is the first pokemon in the Pokemons array
 # Example: choosePokemon("daddafefs") returns nil if no matching pokemon is found
-def choosePokemon(pokemonOfChoice)
+def choosePokemon(pokemonOfChoice) # LUCAS
   if pokemonOfChoice == pokemonOfChoice.to_i.to_s
     pokemonOfChoice = pokemonOfChoice.to_i
     if Pokemons[pokemonOfChoice-1] != nil
@@ -180,13 +215,15 @@ def choosePokemon(pokemonOfChoice)
       puts "You do not have a pokemon with that index"
     end
   elsif pokemonOfChoice == pokemonOfChoice.to_f.to_s
-    puts "Inga decimaler är tillåtna"
+    puts "No decimals allowed"
   else
     return nameMatch(pokemonOfChoice)
   end
 end
 ## Same but attacks
-def chooseAttack(attackofChoice, allyMoves)
+# Argument 1: String - the name or index of the action
+# Argument 2: Array - the array of moves that the ally has
+def chooseAttack(attackofChoice, allyMoves) # LUCAS
   if attackofChoice == attackofChoice.to_i.to_s
     attackofChoice = attackofChoice.to_i
     if allyMoves[attackofChoice-1] != nil
@@ -195,9 +232,8 @@ def chooseAttack(attackofChoice, allyMoves)
         puts "You do not have a pokemon with that index"
     end
   elsif attackofChoice == attackofChoice.to_f.to_s
-    puts "Inga decimaler är tillåtna"
+    puts "No decimals allowed"
   else
-    puts "valid"
     return attackMatch(attackofChoice, allyMoves)
   end
 end
@@ -207,7 +243,7 @@ end
 # Returns: Integer - the index of the pokemon in the Pokemons array
 # Example: nameMatch("bulbasaur") returns 0 if bulbasaur is the first pokemon in the Pokemons array
 # Example: choosePokemon("bulasdefsdf") asks the player if they meant a similar name, in this case bulbasaur, and returns the index of that pokemon if the player answers "yes" else nil
-def nameMatch(nameGiven) 
+def nameMatch(nameGiven) # LUCAS
   nameGiven = nameGiven.upcase
   i = 0
   bestMatch = 0
@@ -245,8 +281,12 @@ def nameMatch(nameGiven)
   end
   return nil
 end
-
-def attackMatch(attackGiven, allyMoves) 
+# Description: This function is an help function to the chooseAttack function and looks for a matching attack name in the allyMoves array
+# Argument: String - the name of the attack given by the player
+# Argument: Array - the array of moves that the ally has
+# Returns: Integer - the index of the attack in the allyMoves array
+# Example: attackMatch("attack") returns 0 if attack is the first move in the allyMoves array
+def attackMatch(attackGiven, allyMoves) # LUCAS
   puts "attackMatch"
   nameGiven = attackGiven.upcase
   p allyMoves
@@ -288,9 +328,12 @@ def attackMatch(attackGiven, allyMoves)
   return nil
 end
 
-
-def showGUI(pokemon)
-  ## Step 1, find pikachu (or corresponding pokemon)
+## Description: This function shows the ascii art of the given pokemon from the ascii.txt file
+# Argument: String - the name of the pokemon
+# Returns: start and endpos - the start and end position of the ascii art in the Ascii array
+# Example: showGUI("Bulbasaur") shows the ascii art of pikachu
+# Example: showGUI("Charmander") shows the ascii art of charmander
+def showGUI(pokemon) ## LEO
   i = 0
   start = 0 
   endpos = 0
@@ -318,9 +361,8 @@ end
 # Returns: Array - the available moves for the given pokemon depending on the level
 # Example: availableMoves(charmander) returns ["attack", "burn", "strengthen"]
 # Example: availableMoves(bulbasaur) returns ["attack", "grassattack", "groundattack"]
-def availableMoves(pokemon) ### FOR SOME REASON RETURNS 0 AS LEVEL. TO BE FIXED - LEO DAHL
+def availableMoves(pokemon) # LEO
   lvl = pokemon.level
-  
   abilities = pokemon.abilities
   moves = [abilities[0]]
   if lvl >= 2
@@ -334,27 +376,33 @@ end
 
 # Description: This function adds a new pokemon to the inventory or offers to swap it. The function use gets.chomp to know if player wants to swap.
 # Argument: objekt - The pokemon that is captured
-# Returns: nil - Returns nil to end the function
-# Example: capturePokemons(charmander) returns nil
-def capturePokemon(pokemon)
+# Returns: true or false - true if the pokemon was captured, false if it was not
+# Example: capturePokemons(charmander) returns true or false (Success or failure)
+def capturePokemon(pokemon) # LUCAS
   i = 0
   id = 1
+
+  captureChance = (100 - (pokemon.hp / pokemon.maxhp * 100)).round(0)
+  if rand(0..100) > captureChance
+    return false
+  end
+
   while i < Pokemons.length
     if Pokemons[i][0] == pokemon.name
       puts "You already have this pokemon! Do you want to swap this pokemon with the one you have in your inventory?"
-      puts "In inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][4]}, Max HP #{Pokemons[i][2]}), New: #{pokemon.name} (lvl. #{pokemon.lvl}, Max HP #{pokemon.maxhp}) "
+      puts "In inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][2]}, Max HP #{Pokemons[i][2]}), New: #{pokemon.name} (lvl. #{pokemon.level}, Max HP #{pokemon.maxhp}) "
       puts "'yes' or 'no'?"
       answer = gets.chomp
       while answer != "yes" && answer != "no"
         puts "answer not valid, please try again"
         puts "You already have this pokemon! Do you want to swap this pokemon with the one you have in your inventory?"
-        puts "in inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][4]}, Max HP #{Pokemons[i][2]}), New: #{pokemon.name} (lvl. #{pokemon.lvl}, Max HP #{pokemon.maxhp}) "
+        puts "in inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][3]}, Max HP #{Pokemons[i][2]}), New: #{pokemon.name} (lvl. #{pokemon.level}, Max HP #{pokemon.maxhp}) "
         puts "'yes' or 'no'?"
         answer = gets.chomp
       end
       if answer == "yes"
         puts "You swapped your pokemon!"
-        Pokemons[i] = [pokemon.name, id, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
+        Pokemons[i] = [pokemon.name, id, pokemon.level, pokemon.xp, pokemon.hp, pokemon.maxhp]
         File.open("Inventory_pokemon.txt", "w") do |file|
           u = 0
           while u < Pokemons.length
@@ -367,15 +415,18 @@ def capturePokemon(pokemon)
             u += 1
           end
         end
+      elsif answer == "no"
+        puts "You did not swap your pokemon!"
+        return false
       end
-      return nil
+      return true
     end
     i += 1
   end
   puts "You captured a #{pokemon.name}!"
   File.open("Inventory_pokemon.txt", "a") do |file|
-    file.puts "#{pokemon.name},#{id},#{pokemon.lvl},#{pokemon.xp},#{pokemon.hp},#{pokemon.maxhp},"
-    Pokemons << [pokemon.name, id, pokemon.lvl, pokemon.xp, pokemon.hp, pokemon.maxhp]
+    file.puts "#{pokemon.name},#{id},#{pokemon.level},#{pokemon.xp},#{pokemon.hp},#{pokemon.maxhp},"
+    Pokemons << [pokemon.name, id, pokemon.level, pokemon.xp, pokemon.hp, pokemon.maxhp]
   end
 end
 

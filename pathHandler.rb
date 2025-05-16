@@ -1,10 +1,27 @@
 require_relative "dialogueHandler.rb"
 
-def pathHandler()
-    pathChooser(dialogueHandler("dialogue/intro.rb"), "dialogue/notEatPikachu.rb", "dialogue/eatPikachu.rb"))
+#when yes or no question yes is ALWAYS first
+
+def pathHandler(currentPath, path1, path2) 
+    #Dir.chdir("dialogue")
+
+    lastChoice = dialogueHandler(currentPath)[0]
+    choices = dialogueHandler(currentPath)[1] 
+
+    if lastChoice == choices[0]
+        return path1
+    elsif lastChoice == choices[1]
+        return path2
+    end
 end
 
-def pathChooser(lastInput, path1, path2)
-
-end #either return path1 or path2
     
+if pathHandler("dialogue/intro.txt", "dialogue/exitHouse.txt", "dialogue/stayHouse.txt") == "dialogue/exitHouse.txt"
+
+    if pathHandler("dialogue/exitHouse.txt", "dialogue/fight.txt", "dialogue/notFight.txt") == "dialogue/fight.txt"
+        #slåss
+    end
+elsif pathHandler("dialogue/intro.txt", "dialogue/exitHouse.txt", "dialogue/stayHouse.txt") == "dialogue/stayHouse.txt"
+
+end
+
