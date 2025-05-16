@@ -2,8 +2,6 @@
 
 #last input of the file determines path(important choice)
 
-input = ""
-
 def dialogueHandler(dialoguePart)
     text = File.read(dialoguePart)
 
@@ -11,11 +9,9 @@ def dialogueHandler(dialoguePart)
 
     choiceEndOrStart = 0
 
-    choiceArr = []
+    choice = []
 
     allChoices = []
-
-    numberOfChoices = 0
 
     choiceError = false
 
@@ -26,17 +22,31 @@ def dialogueHandler(dialoguePart)
         end
 
         if choiceEndOrStart == 1
-            numberOfChoices += 1
+
             if text[i] != "|"
-                choiceArr.push(text[i])
                 allChoices.push(text[i])
             end
         elsif choiceEndOrStart == 2
+            choiceEndOrStart = 0
+        end
+    end
 
-            if choiceArr.join() == "input"
+    for i in 0..text.length
+
+        if text[i] == "|"
+            choiceEndOrStart += 1
+        end
+
+        if choiceEndOrStart == 1
+            if text[i] != "|"
+                choice.push(text[i])
+            end
+        elsif choiceEndOrStart == 2
+
+            if choice.join() == "input"
                 input = gets.chomp
                 
-            elsif choiceArr.join() == "yes/no"
+            elsif choice.join() == "yes/no"
 
                 print("type y for yes and n for no: ");
                 input = gets.chomp
@@ -59,14 +69,14 @@ def dialogueHandler(dialoguePart)
             else
                 input = gets.chomp
 
-                if choiceArr.join().include? input
+                if choice.join().include? input
                     print("your choice: #{input}")
                 else
                     choiceError = true
                     while choiceError == true
-                        print("Your choices are #{choiceArr.join()}: ")
+                        print("Your choices are #{choice.join()}: ")
                         input = gets.chomp
-                        if choiceArr.join().include? input
+                        if choice.join().include? input
                             print("your choice: #{input}")
                             choiceError = false
                         end
@@ -74,30 +84,30 @@ def dialogueHandler(dialoguePart)
                 end
             end
 
-            if lastChoice(allChoices, choiceArr) == false
+            if lastChoice(allChoices, choice) == false
                 choiceArr = []
-            end
-
-            choiceEndOrStart = 0
-            
+            end  
+            choiceEndOrStart = 0     
         else
             print(text[i])
             #sleep(0.05)
-        end                   
+        end
+           
     end
-    p [input, choiceArr]
+
+    p [input, choiceArr, allChoices]
 end
 
-def lastChoice(allChoices, choiceArr)
+def lastChoice(allChoicesArr, choiceArr)
     matchCount = 0;
 
-    for i in (allChoices.length-choiceArr.length)..allChoices.length-1
-        if allChoices[i] == choiceArr[i]
+    for i in (allChoices.length-choiceArr.length)..allChoices.length #ändra om
+        if choiceArr[i] == allChoices[i]
             matchCount += 1
         end
     end
 
-    if matchCount == choiceArr.length-1
+    if matchCount == choiceArr.length #här också
         return true
     else
         return false
