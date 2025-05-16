@@ -20,7 +20,7 @@ require_relative "pokemons.rb"
 
 
 def game_start()
-  enemies = ["squirtle", "pikachu", "bulbasaur"]
+  enemies = ["squirtle", "charmander", "bulbasaur"]
   main = true
   while main
     diaNum = 0

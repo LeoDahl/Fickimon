@@ -1,8 +1,6 @@
 require_relative 'pokemons.rb'
 
 Pokemons = File.readlines("Inventory_pokemon.txt")
-counterTypeMult = 1.4
-badTypeMult = 0.7
 p Pokemons
 
 i = 0
@@ -29,8 +27,7 @@ def initFight(enemyPokemon)
     pokemon_choice = gets.chomp
     yourPokemonIndex = choosePokemon(pokemon_choice)
   end
-  puts "pokemonarray: #{Pokemons[yourPokemonIndex]}"
-  pokemonArray = Pokemons[yourPokemonIndex][0].chomp.split(",")
+  pokemonArray = Pokemons[yourPokemonIndex]
   yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i)
   enemyLvl = rand(1..5)
   if enemyLvl > 2
@@ -40,7 +37,7 @@ def initFight(enemyPokemon)
   end
   enemyPokemon = Pokemon.new(enemyPokemon, 1, enemyLvl, 0, enemyMaxhp, enemyMaxhp)
   puts "You are fighting against a level #{enemyPokemon.level} #{enemyPokemon.name}!"
-  puts "You have a level #{yourPokemon.returnLvl()} #{yourPokemon.name}!"
+  puts "You have a level #{yourPokemon.level} #{yourPokemon.name}!"
   fight(enemyPokemon, yourPokemon)
 end
 
@@ -48,32 +45,44 @@ end
 # Argument 1: Objekt - the enemy pokemon
 # Argument 2: Objekt - the player pokemon
 # Returns: None
+# Example: Pokemon.new("CHARMANDER, 1, 1, 1, 1, 1")
 def fight(enemy, ally)
   inFight = true
   allyMoves = availableMoves(ally)
+  allyMoves << "Capture"
   enemyMoves = availableMoves(enemy)
   allyMult = calcDmgMult(ally.level.to_i)
   enemyMult = calcDmgMult(enemy.level.to_i)
   while inFight
-    puts "Choose your move against #{enemy.name}!"
+    puts "Choose your action against #{enemy.name}!"
     moves = 0
     while moves < allyMoves.length
       puts ((1+moves).to_s + ". " + allyMoves[moves].to_s)
       moves += 1
     end
     choosenMove = gets.chomp
-    i = 0
-    puts "allymoves: #{allyMoves.length}"
-    while i < allyMoves.length do
-          puts "You chose: #{choosenMove}"
-          attack = chooseAttack(choosenMove, allyMoves)
-          chosenAttack = allyMoves[attack]
-          puts "chosenAttack: #{chosenAttack}"
-          ability = ally.GetAbilityObjekt(chosenAttack.upcase)
-          p ability==nil
-          allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
-          i = i + 1
-      end
+    attack = chooseAttack(choosenMove, allyMoves)
+    chosenAttack = allyMoves[attack]
+    ability = ally.GetAbilityObjekt(chosenAttack.upcase)
+    hpBefore = enemy.hp
+    allyMult, enemyMult = doDmgTo(enemy, ability, allyMult, enemyMult)
+    puts "You dealt: #{hpBefore - enemy.hp} dmg!"
+    ## Check if enemy has fainted
+    if enemy.hp >= 0
+      newxp = (enemy.maxhp)/2
+      puts "#{enemy.name} has fainted! You win!"
+      puts "You gained #{newxp} xp!"
+      break
+    else
+      puts "#{enemy.name} now has #{enemy.hp} hp"
+    end
+    ## Enemy turn
+
+    chosenAttack = enemyMoves[rand(0..enemyMoves.length-1)]
+    ability = enemy.GetAbilityObjekt(chosenAttack.upcase)
+    enemyMult, allyMult = doDmgTo(ally, ability, enemyMult, allyMult)
+
+   
   end
 end
 
@@ -90,6 +99,8 @@ end
 # Example: doDmgTo(enemy_pokemon, Strengthen, 1.0, 1.0) # => attackerMult becomes 1.2 (raises user's damage multiplier)
 def doDmgTo(reciever, move, attackerMult, recieverMult)
   dmg = 0
+  counterTypeMult = 1.4
+  badTypeMult = 0.7
   case move.name
     when "Basic Attack" 
       dmg = (Attack.dmg * attackerMult).round(0)
@@ -99,9 +110,11 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
     when "Grass Attack"    ## Grass attack counters water & fire?
       dmg = GrassAttack.dmg * attackerMult
       if reciever.type == "water"
+        puts "It was super effective!"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
       elsif reciever.type == "fire"
-        reciever.takeDamage((dmg * counterTypeMult).round(0))
+        puts "It was not very effective.."
+        reciever.takeDamage((dmg * badTypeMult).round(0))
       else
         reciever.takeDamage(dmg)
       end
@@ -110,7 +123,7 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
       if reciever.type == "grass"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
       elsif reciever.type == "water"
-        reciever.takeDamage((dmg * counterTypeMult).round(0))
+        reciever.takeDamage((dmg * badTypeMult).round(0))
       else
         reciever.takeDamage(dmg)
       end            
@@ -119,7 +132,7 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
       if reciever.type == "fire"
         reciever.takeDamage((dmg * counterTypeMult).round(0))
       elsif reciever.type == "grass"
-        reciever.takeDamage((dmg * counterTypeMult).round(0))
+        reciever.takeDamage((dmg * badTypeMult).round(0))
       else
         reciever.takeDamage(dmg)
       end       
@@ -128,9 +141,6 @@ def doDmgTo(reciever, move, attackerMult, recieverMult)
     when "Strengthen"  
       attackerMult *= 1.2    
     end
-    puts "dmg - #{dmg}"
-    puts reciever.name + " has" + " " + reciever.hp.to_s + " HP left"
-    puts ((reciever.hp).to_s)
     return [attackerMult, recieverMult]
 end
 
@@ -236,7 +246,6 @@ def nameMatch(nameGiven)
   return nil
 end
 
-## TO BE FIXED - LEO DAHL
 def attackMatch(attackGiven, allyMoves) 
   puts "attackMatch"
   nameGiven = attackGiven.upcase
@@ -311,8 +320,7 @@ end
 # Example: availableMoves(bulbasaur) returns ["attack", "grassattack", "groundattack"]
 def availableMoves(pokemon) ### FOR SOME REASON RETURNS 0 AS LEVEL. TO BE FIXED - LEO DAHL
   lvl = pokemon.level
-  puts "name: #{pokemon.name}"
-  puts "lvl: #{pokemon.level}"
+  
   abilities = pokemon.abilities
   moves = [abilities[0]]
   if lvl >= 2
@@ -366,8 +374,8 @@ def capturePokemon(pokemon)
   end
   puts "You captured a #{pokemon.name}!"
   File.open("Inventory_pokemon.txt", "a") do |file|
-    file.puts "#{pokemon.name},#{id},#{pokemon.maxhp},#{pokemon.hp},#{pokemon.lvl},#{pokemon.xp},"
-    Pokemons << [pokemon.name, id, pokemon.maxhp, pokemon.hp, pokemon.lvl, pokemon.xp]
+    file.puts "#{pokemon.name},#{id},#{pokemon.lvl},#{pokemon.xp},#{pokemon.hp},#{pokemon.maxhp},"
+    Pokemons << [pokemon.name, id, pokemon.lvl, pokemon.xp, pokemon.hp, pokemon.maxhp]
   end
 end
 
