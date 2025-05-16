@@ -390,7 +390,7 @@ def capturePokemon(pokemon) # LUCAS
   while i < Pokemons.length
     if Pokemons[i][0] == pokemon.name
       puts "You already have this pokemon! Do you want to swap this pokemon with the one you have in your inventory?"
-      puts "In inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][2]}, Max HP #{Pokemons[i][2]}), New: #{pokemon.name} (lvl. #{pokemon.level}, Max HP #{pokemon.maxhp}) "
+      puts "In inventory: #{Pokemons[i][0]} (lvl. #{Pokemons[i][2]}, Max HP #{Pokemons[i][4]}), New: #{pokemon.name} (lvl. #{pokemon.level}, Max HP #{pokemon.maxhp}) "
       puts "'yes' or 'no'?"
       answer = gets.chomp
       while answer != "yes" && answer != "no"
