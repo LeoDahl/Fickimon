@@ -92,7 +92,7 @@ def dialogueHandler(dialoguePart)
             choiceEndOrStart = 0     
         else
             print(text[i])
-            sleep(0.05)
+            sleep(0.03)
         end
            
     end

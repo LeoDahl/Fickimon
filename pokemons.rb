@@ -79,11 +79,11 @@ class Abilities
 end
 
 ## Create current ability
-Attack = Abilities.new("Basic", "Basic Attack", "Attack", 10, nil)
-GrassAttack = Abilities.new("Grass", "Grass Attack", "Attack", 20, nil)
+Attack = Abilities.new("Basic", "Basic Attack", "Attack", 30, nil)
+GrassAttack = Abilities.new("Grass", "Grass Attack", "Attack", 40, nil)
 Strengthen = Abilities.new("PowerUp", "Strengthen", "UpgradeStrength", 0, nil)
-Burn = Abilities.new("Fire", "Burn", "lasting_attack", 5, 3)
-Waterfall = Abilities.new("Water", "Waterfall", "Attack", 15, nil)
+Burn = Abilities.new("Fire", "Burn", "lasting_attack", 40, 3)
+Waterfall = Abilities.new("Water", "Waterfall", "Attack", 40, nil)
 GroundAttack = Abilities.new("Ground", "Ground attack", "Sleep", 0, 1)
 Weaken = Abilities.new("PowerDown", "Weaken", "DowngradeStrength", 0, nil)
 

@@ -1,25 +1,13 @@
-
-
 require_relative "fightHandler.rb"
 require_relative "dialogueHandler.rb"
 require_relative "pokemons.rb"
-# def get_Dialogue(num)
-#   dialoguesArrays = []
-#   dialogue = File.open("dialouge.txt")
-#   dialogueRows = dialogue.readlines()
-#   x = 0
-#   while x != dialogueRows.length do 
-#     if dialogueRows[x][0] == "'"
-#       dialoguesArrays << dialogueRows[x]
-#     end
-#     x = x + 1
-#   end
-#   return dialoguesArrays[num]
-# end
+require_relative "pathHandler.rb"
 
+File.open("Inventory_pokemon.txt", "w") do |file|
+  file.print "CHARMANDER,1,1,1,100,100,FIRE,\n"
+end
 
-
-def game_start() # LUCAS
+def game_start()
   enemies = ["squirtle", "charmander", "bulbasaur"]
   main = true
   while main
@@ -32,34 +20,36 @@ def game_start() # LUCAS
     optionRows = options.readlines()
     notValid = true
 
-    validInputs = ["Start", "start"] 
+    validInputs = "START" 
     while notValid
       puts "Type Start to begin!"
-      input = gets.chomp
+      input = gets.chomp.upcase
       notValid = true
       i = 0
-      while i < validInputs.length
-        if input == validInputs[i]
-          notValid = false
-        end
-        i += 1
+      if input == validInputs
+        notValid = false
       end
     end
 
-    # puts get_Dialogue(input.to_i) <---- Fungerar inte
-        #Här startar spelet
-    puts "Welcome to the world of Pokemon!"
-
-    if pathHandler("intro.txt", "exitHouse.txt", "stayHouse.txt") == "exitHouse.txt"
-      #här bestäms paths
-      if pathHandler("exitHouse.txt", "fight.txt", "notFight.txt") == "fight.txt"
-        #slåss
-      end
-    elsif pathHandler("intro.txt", "exitHouse.txt", "stayHouse.txt") == "stayHouse.txt"
+    x = pathHandler("dialogue/intro.txt", "dialogue/exitHouse.txt", "dialogue/stayHouse.txt")
+    if x == "dialogue/exitHouse.txt"
+      dialogueHandler("dialogue/exitHouse.txt")
+      puts "----------------------------------"
+      puts "press ENTER to continue"
+      gets.chomp
+      enemyIndex = rand(0..enemies.length-1)
+      initFight(enemies[enemyIndex])
+    elsif x == "dialogue/stayHouse.txt"
+      dialogueHandler("dialogue/stayHouse.txt")
+      break
     end
+  end
+  while true
+    puts "--------------------------------------"
+    puts "press ENTER to to start a new fight"
+    gets
     enemyIndex = rand(0..enemies.length-1)
     initFight(enemies[enemyIndex])
-    # Efter fighthandler
   end
 end
 

@@ -4,6 +4,4 @@ Timmy: Hi you are you also getting your first pokemon today?
 You say yes
 Timmy hand you a pokeball with charmander
 Timmy: I started yesterday, ill let you test train with me first
-train with Timmy?
-|yes,no|
 

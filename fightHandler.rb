@@ -21,7 +21,7 @@ def initFight(enemyPokemon)
   yourPokemonIndex = nil
   while yourPokemonIndex == nil 
     puts "Please select pokemon to fight with!"
-    showpokemons() ## SHOW POKEMONS
+    showpokemons() 
     puts "write the number or name of the pokemon. example: '1' or 'bulbasaur'" 
     pokemon_choice = gets.chomp 
     yourPokemonIndex = choosePokemon(pokemon_choice) 
@@ -30,7 +30,10 @@ def initFight(enemyPokemon)
   yourPokemon = Pokemon.new(pokemonArray[0], pokemonArray[1].to_i, pokemonArray[2].to_i, pokemonArray[3].to_i, pokemonArray[4].to_i, pokemonArray[5].to_i) 
   ## Create pokemon object
   showGUI(pokemonArray[0].upcase)
-  enemyLvl = rand(1..5) 
+  enemyLvl = yourPokemon.level + rand(-1..1)
+  if enemyLvl < 1
+    enemyLvl = 1
+  end 
   if enemyLvl > 2 
     enemyMaxhp = rand(120..300) 
   else 
@@ -47,12 +50,12 @@ end
 # Argument 2: Objekt - the player pokemon
 # Returns: None
 # Example: Pokemon.new("CHARMANDER, 1, 1, 1, 1, 1")
-def fight(enemy, ally) # LUCAS
+def fight(enemy, ally) 
   inFight = true
-  allyMoves = availableMoves(ally) # All moves as an array for ally
+  allyMoves = availableMoves(ally) 
   allyMoves << "Capture" 
-  enemyMoves = availableMoves(enemy) # All moves for enemy
-  allyMult = calcDmgMult(ally.level.to_i) # Mult depending on lvl
+  enemyMoves = availableMoves(enemy) 
+  allyMult = calcDmgMult(ally.level.to_i) 
   enemyMult = calcDmgMult(enemy.level.to_i)
   while inFight
     attack = nil
@@ -135,7 +138,7 @@ def doActionAgainst(reciever, move, attackerMult, recieverMult) # LEO
       reciever.takeDamage(dmg)   
     when "Ground attack" 
       dmg = reciever.takeDamage((GroundAttack.dmg * attackerMult).round(0))
-    when "Grass Attack"    ## Grass attack counters water & fire?
+    when "Grass Attack" 
       dmg = GrassAttack.dmg * attackerMult
       if reciever.type == "water"
         puts "It was super effective!"
@@ -272,7 +275,6 @@ def nameMatch(nameGiven) # LUCAS
   answer = gets.chomp
   while answer != "yes" && answer != "no"
     puts "answer not valid, please try again"
-    puts "did you mean: '#{Pokemons[bestMatchIndex][0]}'?"
     puts "'yes' or 'no'?"
     answer = gets.chomp
   end
@@ -318,7 +320,6 @@ def attackMatch(attackGiven, allyMoves) # LUCAS
   answer = gets.chomp
   while answer != "yes" && answer != "no"
     puts "answer not valid, please try again"
-    puts "did you mean: '#{allyMoves[bestMatchIndex][0]}'?"
     puts "'yes' or 'no'?"
     answer = gets.chomp
   end
@@ -425,9 +426,7 @@ def capturePokemon(pokemon) # LUCAS
   end
   puts "You captured a #{pokemon.name}!"
   File.open("Inventory_pokemon.txt", "a") do |file|
-    file.puts "#{pokemon.name},#{id},#{pokemon.level},#{pokemon.xp},#{pokemon.hp},#{pokemon.maxhp},"
+    file.puts "\n#{pokemon.name},#{id},#{pokemon.level},#{pokemon.xp},#{pokemon.hp},#{pokemon.maxhp},"
     Pokemons << [pokemon.name, id, pokemon.level, pokemon.xp, pokemon.hp, pokemon.maxhp]
   end
 end
-
-initFight("squirtle")
