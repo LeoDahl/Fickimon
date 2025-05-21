@@ -53,7 +53,7 @@ end
 def fight(enemy, ally) 
   inFight = true
   allyMoves = availableMoves(ally) 
-  allyMoves << "Capture" 
+  allyMoves << "capture" 
   enemyMoves = availableMoves(enemy) 
   allyMult = calcDmgMult(ally.level.to_i) 
   enemyMult = calcDmgMult(enemy.level.to_i)
@@ -266,6 +266,9 @@ def nameMatch(nameGiven) # LUCAS
       bestMatch = matches
       bestMatchIndex = i
     end
+    if bestMatch == Pokemons[bestMatchIndex][0].length
+      return bestMatchIndex
+    end
     i += 1
   end
   puts "could not find the a pokemon with the name of: '#{nameGiven}'"
@@ -288,7 +291,7 @@ end
 # Returns: Integer - the index of the attack in the allyMoves array
 # Example: attackMatch("attack") returns 0 if attack is the first move in the allyMoves array
 def attackMatch(attackGiven, allyMoves) # LUCAS
-  nameGiven = attackGiven.upcase
+  nameGiven = attackGiven.downcase
   i = 0
   bestMatch = 0
   bestMatchIndex = nil
@@ -301,13 +304,15 @@ def attackMatch(attackGiven, allyMoves) # LUCAS
       end
       u += 1
     end
-    puts "matches: #{matches}"
     if matches == allyMoves[i][0].length
       return i
     end
     if matches >= bestMatch
       bestMatch = matches
       bestMatchIndex = i
+    end
+    if bestMatch == allyMoves[bestMatchIndex].length
+      return bestMatchIndex
     end
     i += 1
   end
