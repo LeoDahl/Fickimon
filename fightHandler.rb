@@ -70,7 +70,6 @@ def fight(enemy, ally)
       attack = chooseAttack(choosenMove, allyMoves)
     end
     chosenAttack = allyMoves[attack]
-
     if chosenAttack == "Capture" then
       puts "You tried to capture the enemy pokemon!"
       successfull = capturePokemon(enemy)
@@ -289,17 +288,15 @@ end
 # Returns: Integer - the index of the attack in the allyMoves array
 # Example: attackMatch("attack") returns 0 if attack is the first move in the allyMoves array
 def attackMatch(attackGiven, allyMoves) # LUCAS
-  puts "attackMatch"
   nameGiven = attackGiven.upcase
-  p allyMoves
   i = 0
   bestMatch = 0
   bestMatchIndex = nil
   while i < allyMoves.length
     u = 0
     matches = 0
-    while u < allyMoves[i][0].length
-      if attackGiven[u] == allyMoves[i][0][u]
+    while u < allyMoves[i].length
+      if attackGiven[u] == allyMoves[i][u]
         matches += 1
       end
       u += 1
